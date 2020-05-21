@@ -1,0 +1,6 @@
+.vscode
+venv
+__pycache__
+secrets.py
+meetings
+.DS_Store
