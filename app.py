@@ -6,10 +6,8 @@ from datetime import datetime, timedelta
 from time import time
 from urllib.parse import urlencode
 from secrets import API_KEY, API_SECRET
-
 DATE_FORMAT = "%Y-%m-%d"
 BASE_URL = "https://api.zoom.us/v2/accounts/me/recordings"
-
 today = datetime.now()
 
 
@@ -41,9 +39,11 @@ def save_meetings(start, end):
     print(f"Received meetings from {start} to {end}")
     for meeting in meetings:
         dirname = "_".join(
-            [meeting["topic"], meeting["start_time"], meeting["host_email"]]
+            [meeting["topic"].replace(
+                " ", ""), meeting["start_time"], meeting["host_email"]]
         )
-        filepath = os.path.join("meetings", dirname)
+        filepath = os.path.abspath(
+            ''.join(ch for ch in dirname if ch.isalnum()))
         recordings = meeting["recording_files"]
         print(f"Downloading: {dirname}")
         for recording in recordings:
@@ -67,15 +67,9 @@ def save_recording(recording, filepath):
     return download_url
 
 
-# start = today - timedelta(59)
-# end = today - timedelta(30)
-# save_meetings(start, end)
-
-
 total_days_to_go_back = today - timedelta(100)
 current_start = today - timedelta(29)
 current_end = today
-
 while current_start > total_days_to_go_back:
     save_meetings(current_start, current_end)
     current_start -= timedelta(30)
